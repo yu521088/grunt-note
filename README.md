@@ -59,74 +59,77 @@ Grunt的配置都是在Gruntfile的grunt.initConfig方法中指定的， 主要�
 Grunt提供了强大的抽象层用于声明任务应该操作那些文件。有好几种定义src-dest(源文件-目标文件)文件映射的方式，均提供了不同程度的描述和控制操
 	作方式。任何一种多任务（multi-task）都能理解下面的格式，所以你只需要选择满足你需求的格式就行。所有的文件格式都支持src和dest属性，简洁模
 	式和文件数组格式还支持一些额外的属性，如： filter, nonull, dot, matchBase, expand 等
-	1. 简洁模式： 
-		`src:['src/aa.js', 'src/bb.js'], dest: 'dest/cc.js'`
-	2. 文件对象模式： 这种形式支持每个目标对应多个src-dest形式的文件映射，属性名就是目标文件，源文件就是它的值(源文件列表则使用数组格式声明)。
+1. 简洁模式： 
+	`src:['src/aa.js', 'src/bb.js'], dest: 'dest/cc.js'`
+2. 文件对象模式： 这种形式支持每个目标对应多个src-dest形式的文件映射，属性名就是目标文件，源文件就是它的值(源文件列表则使用数组格式声明)。
 		
-		files: {
-			'dest/a.js': ['src/aa.js', 'src/aaa.js'],
-			'dest/a1.js': ['src/aa1.js', 'src/aaa1.js'],
-		}
+	files: {
+		'dest/a.js': ['src/aa.js', 'src/aaa.js'],
+		'dest/a1.js': ['src/aa1.js', 'src/aaa1.js'],
+	}
 
-	3. 文件数组模式： 这种形式支持每个目标对应多个src-dest文件映射，同时也允许每个映射拥有额外属性
+3. 文件数组模式： 这种形式支持每个目标对应多个src-dest文件映射，同时也允许每个映射拥有额外属性
 		
-		files: [
-			{src: ['src/bb.js', 'src/bbb.js'], dest: 'dest/b/', nonull: true},
-			{src: ['src/bb1.js', 'src/bbb1.js'], dest: 'dest/b1/', filter: 'isFile'},
-		]
+	files: [
+		{src: ['src/bb.js', 'src/bbb.js'], dest: 'dest/b/', nonull: true},
+		{src: ['src/bb1.js', 'src/bbb1.js'], dest: 'dest/b1/', filter: 'isFile'},
+	]
 
-	4. 通配符模式： 
-		+ '*'匹配任意数量的字符，除了'/'
-		+ '?'匹配单个字符，除了'/'
-		+ '**'匹配任意数量的字符，包括'/'
-		+ '{}'或表达式， 用逗号分割
-		+ '!'，非表达式
-	5. 动态构建文件：当你希望处理大量的单个文件时，这里有一些附加的属性可以用来动态的构建一个文件列表。这些属性都可以用于简洁和文件数组模式。
-		expand 设置为true用于启用下面的选项：
-			+ 'cwd'  源文件的相对路径
-			+ 'src'  源文件相对于cwd的匹配模式
-			+ 'dest' 目标文件路径的前缀
-			+ 'ext'  替换目标文件的扩展名
-			
-		实例：
-		grunt.initConfig({
-		  uglify: {
-			static_mappings: {
-			  // Because these src-dest file mappings are manually specified, every
-			  // time a new file is added or removed, the Gruntfile has to be updated.
-			  files: [
-				{src: 'lib/a.js', dest: 'build/a.min.js'},
-				{src: 'lib/b.js', dest: 'build/b.min.js'},
-				{src: 'lib/subdir/c.js', dest: 'build/subdir/c.min.js'},
-				{src: 'lib/subdir/d.js', dest: 'build/subdir/d.min.js'},
-			  ],
+4. 通配符模式： 
++ '*'匹配任意数量的字符，除了'/'
++ '?'匹配单个字符，除了'/'
++ '**'匹配任意数量的字符，包括'/'
++ '{}'或表达式， 用逗号分割
++ '!'，非表达式
+
+5. 动态构建文件：当你希望处理大量的单个文件时，这里有一些附加的属性可以用来动态的构建一个文件列表。这些属性都可以用于简洁和文件数组模式。
+	expand 设置为true用于启用下面的选项：
+	+ 'cwd'  源文件的相对路径
+	+ 'src'  源文件相对于cwd的匹配模式
+	+ 'dest' 目标文件路径的前缀
+	+ 'ext'  替换目标文件的扩展名
+		
+实例：
+
+	grunt.initConfig({
+	  uglify: {
+		static_mappings: {
+		  // Because these src-dest file mappings are manually specified, every
+		  // time a new file is added or removed, the Gruntfile has to be updated.
+		  files: [
+			{src: 'lib/a.js', dest: 'build/a.min.js'},
+			{src: 'lib/b.js', dest: 'build/b.min.js'},
+			{src: 'lib/subdir/c.js', dest: 'build/subdir/c.min.js'},
+			{src: 'lib/subdir/d.js', dest: 'build/subdir/d.min.js'},
+		  ],
+		},
+		dynamic_mappings: {
+		  // Grunt will search for "**/*.js" under "lib/" when the "uglify" task
+		  // runs and build the appropriate src-dest file mappings then, so you
+		  // don't need to update the Gruntfile when files are added or removed.
+		  files: [
+			{
+			  expand: true,     // Enable dynamic expansion. 打开动态构建
+			  cwd: 'lib/',      // Src matches are relative to this path. 相对路径
+			  src: ['**/*.js'], // Actual pattern(s) to match. 文件匹配模式
+			  dest: 'build/',   // Destination path prefix. 目标文件前缀
+			  ext: '.min.js',   // Dest filepaths will have this extension. 替换的文件扩展名
 			},
-			dynamic_mappings: {
-			  // Grunt will search for "**/*.js" under "lib/" when the "uglify" task
-			  // runs and build the appropriate src-dest file mappings then, so you
-			  // don't need to update the Gruntfile when files are added or removed.
-			  files: [
-				{
-				  expand: true,     // Enable dynamic expansion. 打开动态构建
-				  cwd: 'lib/',      // Src matches are relative to this path. 相对路径
-				  src: ['**/*.js'], // Actual pattern(s) to match. 文件匹配模式
-				  dest: 'build/',   // Destination path prefix. 目标文件前缀
-				  ext: '.min.js',   // Dest filepaths will have this extension. 替换的文件扩展名
-				},
-			  ],
-			},
-		  },
-		});
+		  ],
+		},
+	  },
+	});
 
 ## 模板
 使用<% %>分隔符指定的模板会在任务从它们的配置中读取相应的数据时将自动扩展扫描。
-	1. `<%= prop.subprop %>` 将会自动展开配置信息中的prop.subprop的值
-	2. `<% %>` 执行任意内联的JavaScript代码
+1. `<%= prop.subprop %>` 将会自动展开配置信息中的prop.subprop的值
+2. `<% %>` 执行任意内联的JavaScript代码
 	
 ## 导入外部数据
 Grunt有`grunt.file.readJSON`和`grunt.file.readYAML`两个方法分别用于引入JSON和YAML数据
 
-	实例：
+实例：
+
 	grunt.initConfig({
 	  pkg: grunt.file.readJSON('package.json'),		//通过grunt.file.readJSON方法引入JSON数据
 	  uglify: {
