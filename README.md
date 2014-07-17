@@ -118,12 +118,12 @@ expand 设置为true用于启用下面的选项：
 	  },
 	});
 
-## 模板
+# 模板
 使用<% %>分隔符指定的模板会在任务从它们的配置中读取相应的数据时将自动扩展扫描。
 1. `<%= prop.subprop %>` 将会自动展开配置信息中的prop.subprop的值
 2. `<% %>` 执行任意内联的JavaScript代码
 	
-## 导入外部数据
+# 导入外部数据
 Grunt有`grunt.file.readJSON`和`grunt.file.readYAML`两个方法分别用于引入JSON和YAML数据
 
 实例：
